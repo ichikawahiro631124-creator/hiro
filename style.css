@@ -1,1 +1,587 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #0f172a;
+  color: #e2e8f0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ヘッダー */
+.app-header {
+  background-color: #1e293b;
+  border-bottom: 1px solid #334155;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-header .logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.25rem;
+  color: #38bdf8;
+}
+
+.app-header h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.app-header h1 span {
+  font-size: 0.85rem;
+  font-weight: normal;
+  color: #94a3b8;
+  margin-left: 8px;
+}
+
+.header-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+.badge-l2 {
+  background-color: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.badge-l3 {
+  background-color: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+/* メインコンテナ */
+.app-container {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  flex: 1;
+  overflow: hidden;
+  height: calc(100vh - 65px);
+}
+
+/* サイドバー */
+.sidebar {
+  background-color: #1e293b;
+  border-right: 1px solid #334155;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.card {
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.card h2 {
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ボタン群 */
+.scenario-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn {
+  border: none;
+  border-radius: 6px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-primary {
+  background-color: #1e293b;
+  color: #cbd5e1;
+  border: 1px solid #334155;
+}
+
+.btn-primary:hover {
+  background-color: #334155;
+  color: #f8fafc;
+}
+
+.btn-primary.active {
+  background-color: #0284c7;
+  color: #ffffff;
+  border-color: #38bdf8;
+}
+
+.btn-primary strong {
+  display: block;
+  font-size: 0.88rem;
+}
+
+.btn-primary small {
+  display: block;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.btn-primary.active small {
+  color: #e0f2fe;
+}
+
+.control-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.btn-action {
+  background-color: #10b981;
+  color: white;
+  justify-content: center;
+  font-weight: bold;
+}
+.btn-action:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.btn-secondary {
+  background-color: #eab308;
+  color: #1e293b;
+  justify-content: center;
+  font-weight: bold;
+}
+.btn-secondary:hover:not(:disabled) {
+  background-color: #ca8a04;
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: #94a3b8;
+  border: 1px solid #475569;
+  justify-content: center;
+}
+.btn-outline:hover:not(:disabled) {
+  background-color: #334155;
+  color: #f8fafc;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.speed-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.speed-row input[type="range"] {
+  flex: 1;
+  accent-color: #38bdf8;
+}
+
+/* パケットヘッダ表示 */
+.packet-inspector {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.layers-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.layer-block {
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.78rem;
+  border-left: 4px solid;
+}
+
+.layer-4 {
+  background-color: #1e1b4b;
+  border-color: #818cf8;
+}
+.layer-3 {
+  background-color: #312e81;
+  border-color: #a855f7;
+}
+.layer-2 {
+  background-color: #0c4a6e;
+  border-color: #38bdf8;
+}
+
+.layer-title {
+  font-weight: bold;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  opacity: 0.8;
+}
+
+.layer-content div {
+  font-family: monospace;
+  margin-top: 2px;
+}
+
+/* トポロジーエリア */
+.topology-area {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 14px;
+  overflow: hidden;
+}
+
+.topology-wrapper {
+  position: relative;
+  flex: 1;
+  min-height: 380px;
+  background-color: #0b1329;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* 領域背景 (LAN / WAN) */
+.network-zone {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  border-radius: 10px;
+  border: 2px dashed;
+  pointer-events: none;
+}
+
+.zone-lan {
+  left: 10px;
+  width: 60%;
+  border-color: rgba(56, 189, 248, 0.3);
+  background-color: rgba(56, 189, 248, 0.03);
+}
+
+.zone-wan {
+  right: 10px;
+  width: 35%;
+  border-color: rgba(168, 85, 247, 0.3);
+  background-color: rgba(168, 85, 247, 0.03);
+}
+
+.zone-label {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.zone-lan .zone-label { color: #38bdf8; }
+.zone-wan .zone-label { color: #c084fc; }
+
+/* SVGライン */
+.lines-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.lines-svg line {
+  stroke: #334155;
+  stroke-width: 3px;
+  transition: stroke 0.3s ease;
+}
+
+.lines-svg line.active-wire {
+  stroke: #38bdf8;
+  stroke-dasharray: 6 4;
+  animation: dash 1s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+/* デバイスノード */
+.device-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background-color: #1e293b;
+  border: 2px solid #475569;
+  border-radius: 10px;
+  padding: 10px 14px;
+  text-align: center;
+  min-width: 140px;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  transition: border-color 0.3s, transform 0.2s;
+}
+
+.device-node.highlight {
+  border-color: #38bdf8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+.device-node.highlight-router {
+  border-color: #c084fc;
+  box-shadow: 0 0 16px rgba(192, 132, 252, 0.6);
+}
+
+.device-icon {
+  font-size: 1.8rem;
+  color: #38bdf8;
+  margin-bottom: 4px;
+}
+
+.node-switch .device-icon { color: #22d3ee; }
+.node-router .device-icon { color: #c084fc; }
+.node-server .device-icon { color: #f43f5e; }
+
+.device-name {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #f8fafc;
+}
+
+.device-ip, .device-mac, .device-type {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  font-family: monospace;
+}
+
+.port-labels {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 100%;
+  display: flex;
+  justify-content: space-around;
+  margin-top: 4px;
+}
+
+.p-tag {
+  font-size: 0.65rem;
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  color: #38bdf8;
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+/* アニメーション用パケット */
+.packet-dot {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  background-color: #38bdf8;
+  color: #0f172a;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  z-index: 20;
+  box-shadow: 0 0 12px #38bdf8;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.packet-sub {
+  background-color: #eab308;
+  box-shadow: 0 0 12px #eab308;
+}
+
+/* 下部パネル (ログ + テーブル) */
+.topology-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  height: 220px;
+}
+
+.log-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.panel-header h3 {
+  font-size: 0.88rem;
+  color: #38bdf8;
+}
+
+#step-indicator {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  background-color: #1e293b;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.log-content {
+  flex: 1;
+  overflow-y: auto;
+  font-size: 0.82rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 4px;
+}
+
+.log-entry {
+  padding: 6px 10px;
+  border-radius: 4px;
+  background-color: #1e293b;
+  line-height: 1.4;
+  border-left: 3px solid #64748b;
+}
+
+.log-entry.active {
+  border-left-color: #38bdf8;
+  background-color: #1e293b;
+  color: #f8fafc;
+  font-weight: 500;
+}
+
+.log-entry.success { border-left-color: #10b981; }
+.log-entry.warning { border-left-color: #f59e0b; }
+
+/* 状態テーブル */
+.tables-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-buttons {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.tab-btn {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #94a3b8;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  background-color: #0284c7;
+  color: white;
+  border-color: #38bdf8;
+}
+
+.table-content-wrapper {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.state-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.76rem;
+  display: none;
+}
+
+.state-table.active {
+  display: table;
+}
+
+.state-table th, .state-table td {
+  padding: 6px 10px;
+  border: 1px solid #334155;
+  text-align: left;
+}
+
+.state-table th {
+  background-color: #1e293b;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.state-table td {
+  font-family: monospace;
+}
+
+.state-table tr.new-row {
+  animation: flashRow 1s ease;
+}
+
+@keyframes flashRow {
+  0% { background-color: rgba(56, 189, 248, 0.4); }
+  100% { background-color: transparent; }
+}
+
+.empty-state {
+  text-align: center !important;
+  color: #64748b;
+  padding: 16px !important;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1024px) {
+  .app-container {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
+  }
+  .topology-wrapper {
+    min-height: 480px;
+  }
+  .topology-bottom {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+}

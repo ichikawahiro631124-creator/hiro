@@ -1,1 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LAN & ネットワーク機器シミュレータ (NetVisualizer)</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- ヘッダー -->
+  <header class="app-header">
+    <div class="logo">
+      <i class="fa-solid fa-network-wired"></i>
+      <h1>NetVisualizer <span>LAN & ネットワーク機器の動作シミュレータ</span></h1>
+    </div>
+    <div class="header-badges">
+      <span class="badge badge-l2">L2 Switch: MAC学習・転送</span>
+      <span class="badge badge-l3">L3 Router: ルーティング・NAT</span>
+    </div>
+  </header>
 
+  <!-- メインレイアウト -->
+  <main class="app-container">
+    <!-- 左サイドバー: コントロール & シナリオ選択 -->
+    <aside class="sidebar">
+      <section class="card">
+        <h2><i class="fa-solid fa-play-circle"></i> シナリオ選択</h2>
+        <div class="scenario-buttons">
+          <button id="btn-lan-ping" class="btn btn-primary active">
+            <i class="fa-solid fa-arrows-left-right"></i>
+            <div>
+              <strong>同一LAN内通信 (PC-A → PC-B)</strong>
+              <small>L2スイッチによるMACアドレス学習と転送</small>
+            </div>
+          </button>
+          <button id="btn-wan-http" class="btn btn-primary">
+            <i class="fa-solid fa-globe"></i>
+            <div>
+              <strong>WAN/インターネット通信 (PC-A → Web)</strong>
+              <small>ルータのデフォルトGW、NAT変換、TTL減少</small>
+            </div>
+          </button>
+          <button id="btn-arp" class="btn btn-primary">
+            <i class="fa-solid fa-bullhorn"></i>
+            <div>
+              <strong>ARP解決ブロードキャスト</strong>
+              <small>MACアドレス未解決時のフラッディングとARP応答</small>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2><i class="fa-solid fa-sliders"></i> シミュレーション操作</h2>
+        <div class="control-row">
+          <button id="btn-start" class="btn btn-action"><i class="fa-solid fa-play"></i> 再生</button>
+          <button id="btn-pause" class="btn btn-secondary" disabled><i class="fa-solid fa-pause"></i> 一時停止</button>
+          <button id="btn-reset" class="btn btn-outline"><i class="fa-solid fa-rotate-left"></i> リセット</button>
+        </div>
+        <div class="speed-row">
+          <label for="speed-range">アニメーション速度:</label>
+          <input type="range" id="speed-range" min="0.5" max="2" step="0.25" value="1">
+          <span id="speed-label">1.0x</span>
+        </div>
+      </section>
+
+      <!-- パケットヘッダ詳細インスペクタ -->
+      <section class="card packet-inspector">
+        <h2><i class="fa-solid fa-box-archive"></i> パケットヘッダ解析 (OSI参照モデル)</h2>
+        <div class="layers-container">
+          <div class="layer-block layer-4">
+            <div class="layer-title">Layer 4 - トランスポート層</div>
+            <div class="layer-content" id="l4-info">プロトコル: ICMP (Ping Echo) / ポート: -</div>
+          </div>
+          <div class="layer-block layer-3">
+            <div class="layer-title">Layer 3 - ネットワーク層 (IP)</div>
+            <div class="layer-content" id="l3-info">
+              <div>送信元IP: <span id="hdr-sip">192.168.1.10</span></div>
+              <div>宛先IP: <span id="hdr-dip">192.168.1.20</span></div>
+              <div>TTL (Time to Live): <span id="hdr-ttl">64</span></div>
+            </div>
+          </div>
+          <div class="layer-block layer-2">
+            <div class="layer-title">Layer 2 - データリンク層 (Ethernet)</div>
+            <div class="layer-content" id="l2-info">
+              <div>送信元MAC: <span id="hdr-smac">AA:BB:CC:01:01</span></div>
+              <div>宛先MAC: <span id="hdr-dmac">AA:BB:CC:01:02</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </aside>
+
+    <!-- 中央: ネットワークトポロジー図 -->
+    <section class="topology-area">
+      <div class="topology-wrapper" id="topology">
+        <!-- SVG接続ライン -->
+        <svg id="network-lines" class="lines-svg"></svg>
+
+        <!-- LAN領域 -->
+        <div class="network-zone zone-lan">
+          <span class="zone-label"><i class="fa-solid fa-house-laptop"></i> 社内LAN (192.168.1.0/24)</span>
+        </div>
+
+        <!-- WAN領域 -->
+        <div class="network-zone zone-wan">
+          <span class="zone-label"><i class="fa-solid fa-cloud"></i> WAN / インターネット (203.0.113.0/24)</span>
+        </div>
+
+        <!-- デバイスノード -->
+        <!-- PC-A -->
+        <div class="device-node" id="node-pca" style="left: 12%; top: 22%;">
+          <div class="device-icon"><i class="fa-solid fa-laptop"></i></div>
+          <div class="device-name">PC-A</div>
+          <div class="device-ip">192.168.1.10</div>
+          <div class="device-mac">MAC: AA:BB:CC:01:01</div>
+        </div>
+
+        <!-- PC-B -->
+        <div class="device-node" id="node-pcb" style="left: 12%; top: 72%;">
+          <div class="device-icon"><i class="fa-solid fa-desktop"></i></div>
+          <div class="device-name">PC-B</div>
+          <div class="device-ip">192.168.1.20</div>
+          <div class="device-mac">MAC: AA:BB:CC:01:02</div>
+        </div>
+
+        <!-- L2 Switch -->
+        <div class="device-node node-switch" id="node-switch" style="left: 38%; top: 47%;">
+          <div class="device-icon"><i class="fa-solid fa-shuffle"></i></div>
+          <div class="device-name">L2 スイッチ</div>
+          <div class="device-type">スイッチングハブ</div>
+          <div class="port-labels">
+            <span class="p-tag p1">P1</span>
+            <span class="p-tag p2">P2</span>
+            <span class="p-tag p3">P3</span>
+          </div>
+        </div>
+
+        <!-- L3 Router -->
+        <div class="device-node node-router" id="node-router" style="left: 64%; top: 47%;">
+          <div class="device-icon"><i class="fa-solid fa-route"></i></div>
+          <div class="device-name">L3 ルータ / NAT</div>
+          <div class="device-ip">LAN: 192.168.1.1</div>
+          <div class="device-ip">WAN: 203.0.113.1</div>
+          <div class="device-mac">MAC: AA:BB:CC:01:GW</div>
+        </div>
+
+        <!-- Web Server (WAN) -->
+        <div class="device-node node-server" id="node-server" style="left: 88%; top: 47%;">
+          <div class="device-icon"><i class="fa-solid fa-server"></i></div>
+          <div class="device-name">Webサーバ</div>
+          <div class="device-ip">203.0.113.80</div>
+          <div class="device-mac">MAC: FF:EE:DD:00:80</div>
+        </div>
+
+        <!-- 動的パケット要素 -->
+        <div id="packet" class="packet-dot"><i class="fa-solid fa-envelope"></i></div>
+        <div id="packet-sub" class="packet-dot packet-sub"><i class="fa-solid fa-envelope"></i></div>
+      </div>
+
+      <!-- 下部: リアルタイム解説ログ & 内部テーブル状態 -->
+      <div class="topology-bottom">
+        <div class="log-panel card">
+          <div class="panel-header">
+            <h3><i class="fa-solid fa-terminal"></i> 動作ステップ解説</h3>
+            <span id="step-indicator">ステップ 0 / 0</span>
+          </div>
+          <div id="log-content" class="log-content">
+            <div class="log-entry system">シナリオを選択して「再生」ボタンを押してください。</div>
+          </div>
+        </div>
+
+        <!-- テーブル表示 (スイッチのMAC学習 & ルータのNATテーブル) -->
+        <div class="tables-panel card">
+          <div class="tab-buttons">
+            <button id="tab-mac" class="tab-btn active"><i class="fa-solid fa-table-cells"></i> スイッチ: MACアドレステーブル</button>
+            <button id="tab-nat" class="tab-btn"><i class="fa-solid fa-diagram-project"></i> ルータ: NAT/NAPT変換テーブル</button>
+          </div>
+          <div class="table-content-wrapper">
+            <table id="mac-table" class="state-table active">
+              <thead>
+                <tr><th>ポート</th><th>MACアドレス</th><th>ステータス</th></tr>
+              </thead>
+              <tbody id="mac-table-body">
+                <tr><td colspan="3" class="empty-state">学習データなし (未通信)</td></tr>
+              </tbody>
+            </table>
+            <table id="nat-table" class="state-table">
+              <thead>
+                <tr><th>LAN側 (内部IP:ポート)</th><th>WAN側 (変換後IP:ポート)</th><th>宛先サーバ</th></tr>
+              </thead>
+              <tbody id="nat-table-body">
+                <tr><td colspan="3" class="empty-state">変換エントリなし</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
